@@ -124,7 +124,7 @@ function jasper(options) {
 			}
 			cb(null, results);
 		},
-		loadJars: ['jrJars', 'dirverJars', function(cb, jars) {
+		loadJars: ['jrJars', 'dirverJars', function(jars, cb) {
 			jars.jrJars.concat(jars.dirverJars).forEach(function(file) {
 				if(path.extname(file) == '.jar') {
 					java.classpath.push(file)
@@ -132,7 +132,7 @@ function jasper(options) {
 			});
 			cb();
 		}],
-		debug: ['loadJars', function(cb) {
+		debug: ['loadJars', function(result, cb) {
 			if(!options.debug) options.debug = 'off';
 			var levels = ['ALL', 'TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR', 'FATAL', 'OFF'];
 			if(levels.indexOf((options.debug+'').toUpperCase()) == -1) options.debug = 'DEBUG';
@@ -164,14 +164,14 @@ function jasper(options) {
 			*/
 			cb();
 		}],
-		loadClass: ['loadJars', function(cb) {
+		loadClass: ['loadJars', function(result, cb) {
 			var cl = java.callStaticMethodSync("java.lang.ClassLoader","getSystemClassLoader")
 			for(var i in options.drivers) {
 				cl.loadClassSync(options.drivers[i].class).newInstanceSync();
 			}
 			cb();
 		}],
-		imports: ['loadClass', function(cb) {
+		imports: ['loadClass', function(result, cb) {
 			self.dm = java.import('java.sql.DriverManager');
 			self.jreds = java.import('net.sf.jasperreports.engine.JREmptyDataSource');
 			self.jrjsonef = java.import('net.sf.jasperreports.engine.data.JsonDataSource');
